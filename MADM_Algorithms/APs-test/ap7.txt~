@@ -1,0 +1,6 @@
+{
+	"delay" : 0.60,
+	"jitter" : 0.08,
+	"packet_loss": 9,
+	"av_bandwidth": 10
+}
