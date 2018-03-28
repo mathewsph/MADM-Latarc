@@ -27,7 +27,7 @@ for a in ap_range:
  num = a
  ap = "ap" + str(a) + ".txt"
  k = "ap" + str(a)
- a = open("APs/"+ap,"r")
+ a = open("../"+ap,"r")
  a = a.read()
  a = ast.literal_eval(a)
 # l.append(a)
@@ -51,8 +51,8 @@ for z in range(1,(int(n)+1)):
   for xij in attr:
    exec("ap" + str(z) + ".append(float(l[z-1][xij]))")
 
-for u in l:
- print (u)
+#for u in l:
+# print (u)
 
 for x in l:
  if x != 0:
@@ -141,5 +141,5 @@ for num2 in range(1,len(l)+1):
   score.append(rt)
  else:
   score.append(1000000)
-print(score)
-print("rede " + str(score.index(min(score)) + 1))
+#print(score)
+print("ap" + str(score.index(min(score)) + 1))

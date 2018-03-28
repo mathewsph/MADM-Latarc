@@ -1,1 +1,1 @@
-{'delay': 12, 'jitter': 6.6, 'packet_loss': 4.0, 'av_bandwidth': 33.8}
+{'delay': 17.0, 'jitter': 7.4, 'packet_loss': 3.5, 'av_bandwidth': 36.0}

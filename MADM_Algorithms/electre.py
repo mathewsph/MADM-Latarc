@@ -37,7 +37,7 @@ for a in ap_range:			#Trecho de codigo para a leitura dos arquivos de texto (com
  num = a
  ap = "ap" + str(a) + ".txt"
  k = "ap" + str(a)
- with open("APs/"+ap,"r") as a:
+ with open("../"+ap,"r") as a:
   a = a.read()
  a = ast.literal_eval(a)
 # print (a)
@@ -267,3 +267,4 @@ for indexscore in ematrix:
  score.append(sum(indexscore)) 
 
 print("ap" + str(score.index(max(score)) + 1))
+#print (score)

@@ -218,11 +218,11 @@ class FlowCore(app_manager.RyuApp):
         if self.net['10.0.0.10'][1]:
             self.net.remove_edge(u'10.0.0.10', 1)
 
-        if self.net[7]['10.0.0.2']:
-            self.net.remove_edge(7, '10.0.0.2')
+        if self.net[14]['10.0.0.2']:
+            self.net.remove_edge(14, '10.0.0.2')
 
-        if self.net['10.0.0.2'][7]:
-            self.net.remove_edge('10.0.0.2', 7)
+        if self.net['10.0.0.2'][14]:
+            self.net.remove_edge('10.0.0.2', 14)
         '''
 
         for dpid in self.nodes_1:
@@ -377,7 +377,7 @@ class FlowCore(app_manager.RyuApp):
                 candidate_APs[k] = int(ap.replace("ap",""))
               print candidate_APs
 #              print candidate_APs[-1]
-              if rssi == -48:
+              if rssi == -46:
                 for link in links:
                  if link[1] == current_AP_number:
                   sw = link[0]
@@ -387,17 +387,21 @@ class FlowCore(app_manager.RyuApp):
 #                os.system('ovs-ofctl del-flows s' + str(sw) + ' ' + '"in_port=' + str(port_in_switch)+'"')
 #                os.system('ovs-ofctl del-flows s' + str(sw) + ' ' + '"dl_dst=' +  msg.split()[2]+'"')
                 print "weak signal, executing handover:"
-                x = "python saw.py " + str(max(candidate_APs)) + " " + str_candidate_APs
-#                print x
+                x = "python multimoora.py " + str(max(candidate_APs)) + " " + str_candidate_APs
+                print x
 #                del_flow(self,datapath,dst)
                 decision = os.popen(x)
                 decision = decision.read()
-                m = decision.split()[0][2]
-                if self.f == 0:
-                  self.delete_intent_internal()
-                  form = {'source': {'sw_src': '7', 'in_port_src': '3', 'host_src': '10.0.0.2'}, 'dest': {'sw_dst': m, 'in_port_dst': '1', 'host_dst': '10.0.0.10'}}
-                  self.create_intent_internal(form)
-                self.f = 1
+                m = decision.replace('ap','')
+                print decision
+                data = con.send(decision)
+####################################################################################################
+ #             elif rssi == -50:
+ #1               if self.f == 0:
+ #2                 self.delete_intent_internal()
+ #3                 form = {'source': {'sw_src': '14', 'in_port_src': '3', 'host_src': '10.0.0.2'}, 'dest': {'sw_dst': m, 'in_port_dst': '1', 'host_dst': '10.0.0.10'}}
+ #4                 self.create_intent_internal(form)
+ #5               self.f = 1
                 print m
                 for link in links:
                  if link[1] == int(m):
@@ -408,8 +412,12 @@ class FlowCore(app_manager.RyuApp):
 #                    z=open('arc.txt','w')
 #                    z.write(m)
 #                    z.close()
-                print decision
-                data = con.send(decision)
+#                print "disconnect"
+#                data = con.send("disconnect")
+              if rssi == -49:
+                  self.delete_intent_internal()
+                  form = {'source': {'sw_src': '14', 'in_port_src': '3', 'host_src': '10.0.0.2'}, 'dest': {'sw_dst': m, 'in_port_dst': '1', 'host_dst': '10.0.0.10'}}
+                  self.create_intent_internal(form)
               else:
                 data = con.send(" ") 
 #          print 'Finalizando conexao do cliente', cliente

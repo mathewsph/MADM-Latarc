@@ -37,7 +37,7 @@ for a in ap_range:			#Trecho de codigo para a leitura dos arquivos de texto (com
  num = a
  ap = "ap" + str(a) + ".txt"
  k = "ap" + str(a)
- with open("APs/"+ap,"r") as a:
+ with open("../"+ap,"r") as a:
   a = a.read()
  a = ast.literal_eval(a)
 # print (a)
@@ -87,10 +87,6 @@ for attribute in attr:
     exec(attribute+"_variance=sum("+attribute+"_square)")
     exec(attribute+"_dp=math.sqrt("+attribute+"_variance)")
 
-print (delay_dp)
-print (jitter_dp)
-print(packet_loss_dp)
-print(av_bandwidth_dp)
 #Normalization No.1
 for attribute in attr:
   exec("a = "+ attribute)

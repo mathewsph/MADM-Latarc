@@ -11,14 +11,14 @@ av_bandwidth_weight = 0.422	#Largura de banda(em Mb - Megabits)
 
 def normalize_min(x,y):					#Funcao "quanto menos, melhor (Para criterios de custo)"
  if max(x) - min(x) != 0:
-  m = (max(x) - y)/(max(x)- min(x))
+  m = (min(x)/y)
  if max(x) - min(x) == 0:
   m = 1
  return m
 	
 def normalize_max(x,z):					#Funcao "quanto mais, melhor (Para criterios beneficos)"
  if max(x) - min(x) != 0:
-  m = (z - min(x))/(max(x)- min(x))
+  m = (z/max(x))
  if max(x) - min(x) == 0:
   m = 1
  return m
@@ -31,16 +31,15 @@ n = int(sys.argv[1])
 p = [0] * n	#Armazenara as pontuacoes de cada rede
 l = [0] * n
 
-print (ap_range)
+#print (ap_range)
 
-
-print (l)
+#print (l)
 #for a in range(1,(int(n)+1)):
 for a in ap_range:			#Trecho de codigo para a leitura dos arquivos de texto (com dados dos APs).
  num = a
  ap = "ap" + str(a) + ".txt"
  k = "ap" + str(a)
- with open("APs-test/"+ap,"r") as a:
+ with open("../"+ap,"r") as a:
   a = a.read()
  a = ast.literal_eval(a)
 # print (a)
@@ -51,6 +50,7 @@ for a in ap_range:			#Trecho de codigo para a leitura dos arquivos de texto (com
   exec("%s = %s" % (i,[]))
   exec("%s = %s" % (k,[]))
   exec("%s = %s" % (k + "_normalized",[]))
+  exec("%s = %s" % (k + "_normalized_2",[]))
 
 #for attributes in l[0]:
 # attr.append(attributes)
@@ -61,7 +61,7 @@ attr.sort(key=len)
 
 for z in range(1,(int(n)+1)):
  if z in ap_range:
-  print (l[(z-1)])
+#  print (l[(z-1)])
   for q in attr:
    exec("ap" + str(z) + ".append(float(l[z-1][q]))")
 
@@ -78,42 +78,64 @@ for x in l:
    if b == 'av_bandwidth':
     av_bandwidth.append(x[b])
 
+#print (delay)
+
 for i in range(1,len(l)+1):			#Normalizacao e multiplicacao pelos pesos
  if i in ap_range:
   g = str(i)
   exec("z = ap" + g)
-  print (z)
+#  print (z)
+  for k in z:
+   if z.index(k) == 0:
+    w = normalize_min(delay,k)
+    exec("ap" + g + "_normalized.append(w)")
+   if z.index(k) == 1:
+    w = normalize_min(jitter,k)
+    exec("ap" + g + "_normalized.append(w)")
+   if z.index(k) == 2:
+    w = normalize_min(packet_loss,k)
+    exec("ap" + g + "_normalized.append(w)")
+   if z.index(k) == 3:
+#    print (k)
+    w = normalize_max(av_bandwidth, k)
+    exec("ap" + g + "_normalized.append(w)")
+
+
+for i in range(1,len(l)+1):			#Normalizacao e multiplicacao pelos pesos
+ if i in ap_range:
+  g = str(i)
+  exec("z = ap" + g + "_normalized")
+#  print (z)
   for k in z:
    if z.index(k) == 0:
     m = k**delay_weight
-    exec("ap" + g + "_normalized.append(m)")
+    exec("ap" + g + "_normalized_2.append(m)")
    if z.index(k) == 1:
     m = k**jitter_weight
-    exec("ap" + g + "_normalized.append(m)")
+    exec("ap" + g + "_normalized_2.append(m)")
    if z.index(k) == 2:
     m = k**packet_loss_weight
-    exec("ap" + g + "_normalized.append(m)")
+    exec("ap" + g + "_normalized_2.append(m)")
    if z.index(k) == 3:
     m = k**av_bandwidth_weight
-    exec("ap" + g + "_normalized.append(m)")
+    exec("ap" + g + "_normalized_2.append(m)")
 
-print (ap1_normalized)
-print (ap2_normalized)
+#print (ap2_normalized_2)
 
 for ap_number in range(1,(int(n)+1)):		#Soma das pontuacoes individuais de cada atributo, para dar a pontuacao final de cada rede.
  if ap_number in ap_range:
   str_index = str(ap_number-1)
   ap_number = str(ap_number)
 #  exec("p.append(sum(ap" + ap_number + "_normalized))")
-  exec("p["+ str_index +"]=functools.reduce(operator.mul, ap" + ap_number + "_normalized)")
-for i in range(1,n+1):
-  if i in ap_range:
-    print (i)
-  else:
-    p[i-1] = 0
-    print (p[i-1])
+  exec("p["+ str_index +"]=functools.reduce(operator.mul, ap" + ap_number + "_normalized_2)")
+#for i in range(1,n+1):
+#  if i in ap_range:
+#    print (i)
+#  else:
+#    p[i-1] = 0
+#    print (p[i-1])
 
-print(p)
+#print(p)
 
-print("rede " + str(p.index(max(p)) + 1))
-print("pontuacao da rede: " + str(max(p)))
+print("ap" + str(p.index(max(p)) + 1))
+#print("pontuacao da rede: " + str(max(p)))

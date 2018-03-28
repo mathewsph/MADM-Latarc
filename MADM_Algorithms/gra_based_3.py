@@ -11,25 +11,25 @@ attrd = ['delay','jitter','packet_loss','av_bandwidth']
 
 def normalize_min(x,y):					#Funcao "quanto menos, melhor (Para criterios de custo)"
  if max(x) - min(x) != 0:
-  m = (max(x) - y)/(max(x)- min(x))
+  m = (min(x)/(y)) 
  if max(x) - min(x) == 0:
   m = 1
  return m
 	
 def normalize_max(x,z):					#Funcao "quanto mais, melhor (Para criterios beneficos)"
  if max(x) - min(x) != 0:
-  m = (z - min(x))/(max(x)- min(x))
+  m = (z)/(max(x))
  if max(x) - min(x) == 0:
   m = 1
  return m
 
 def cr(difference_attr,zeta,g):
  if max(difference_attr) != 0:
-  h = min(difference_attr) + (zeta*(max(difference_attr)))/(g + (zeta*(max(difference_attr))))
-  return h
+  ht = (min(difference_attr) + (zeta*(max(difference_attr))))/(g + (zeta*(max(difference_attr))))
+  return ht
  elif max(difference_attr) == 0:
   h = 1
-  return h
+  return ht
 
 ap_range = ast.literal_eval(sys.argv[2])
 n = int(sys.argv[1]) #Leitura do numero de APS que serao executados.
@@ -106,7 +106,8 @@ zeta = 0.5
 #print len(l)
 
 for attr in attrd:		#series padroes (default series = "ds"), para calculo dos coeficientes relacionais
- exec("ds_" + attr + "= max(" + attr + "_normalized)")
+# exec("ds_" + attr + "= max(" + attr + "_normalized)")
+ exec("ds_" + attr + "= 1")
  exec("p = "+attr+"_normalized")
  exec("%s = %s" % ("difference_"+attr,[]))
  for ij_normalized in p:

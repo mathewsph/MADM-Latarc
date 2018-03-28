@@ -18,14 +18,14 @@ def normalize_min(x,y):					#Funcao "quanto menos, melhor (Para criterios de cus
 	
 def normalize_max(x,z):					#Funcao "quanto mais, melhor (Para criterios beneficos)"
  if max(x) - min(x) != 0:
-  m = (z - min(x))/(max(x)- min(x))
+  m = (z - 0)/(max(x)- 0)
  if max(x) - min(x) == 0:
   m = 1
  return m
 
 def cr(difference_attr,zeta,g):
  if max(difference_attr) != 0:
-  h = min(difference_attr) + (zeta*(max(difference_attr)))/(g + (zeta*(max(difference_attr))))
+  h = (min(difference_attr) + (zeta*(max(difference_attr))))/(g + (zeta*(max(difference_attr))))
   return h
  elif max(difference_attr) == 0:
   h = 1
@@ -42,7 +42,7 @@ for a in range(1,(int(n)+1)):
   num = a
   ap = "ap" + str(a) + ".txt"
   k = "ap" + str(a)
-  a = open("../"+ap,"r")
+  a = open("APs/"+ap,"r")
   a = a.read()
   a = ast.literal_eval(a)
   l[num-1] = a
@@ -106,7 +106,9 @@ zeta = 0.5
 #print len(l)
 
 for attr in attrd:		#series padroes (default series = "ds"), para calculo dos coeficientes relacionais
- exec("ds_" + attr + "= max(" + attr + "_normalized)")
+# exec("ds_" + attr + "= max(" + attr + "_normalized)")
+ exec("ds_" + attr + "=1")
+
  exec("p = "+attr+"_normalized")
  exec("%s = %s" % ("difference_"+attr,[]))
  for ij_normalized in p:
@@ -144,7 +146,7 @@ for ap_number in range(1,(int(n)+1)):		#sera executada a soma dos atributos norm
   ap_number = str(ap_number)
   exec("q["+ index + "]=(sum(ap" + ap_number + "_score))")
 
-#print(q) #Pontuacao de todas as redes avaliadas (na ordem numerica de 1 ate n).
+print(q) #Pontuacao de todas as redes avaliadas (na ordem numerica de 1 ate n).
 
-print("ap" + str(q.index(max(q)) + 1))	#Melhor rede entre as candidatas
-#print("pontuacao da rede: " + str(max(q)))	#Pontuacao dessa rede
+print("rede " + str(q.index(max(q)) + 1))	#Melhor rede entre as candidatas
+print("pontuacao da rede: " + str(max(q)))	#Pontuacao dessa rede
