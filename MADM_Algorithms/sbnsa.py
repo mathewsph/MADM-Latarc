@@ -32,6 +32,7 @@ for a in ap_range:
   exec("%s = %d" % (i + "_min",0))
   exec("%s = %s" % (i + "_normalized",[]))
   exec("%s = %s" % (k + "_normalized",[]))
+  exec("%s = %s" % (k + "_normalized_2",[]))
   exec("%s = %s" % (i + "_x",[]))
 
 #for attributes in l[0]:
@@ -130,23 +131,23 @@ for ab in range(1,(int(n)+1)):
   exec("%s = %s" % ("ap"+g+"_dist_neg",[]))
   for q in z:
    if z.index(q) == 0:
-    w = ((z[0] - delay_max) ** 2)
+    w = ((z[0] * delay_max) / (math.sqrt(z[0] ** 2) + math.sqrt(delay_max **2)))
     exec("ap"+g+"_dist_pos"+".append(w)")
    elif z.index(q) == 3:
-    exec("ap"+g+"_dist_pos"+".append((z[3] - av_bandwidth_max) ** 2)")
+    exec("ap"+g+"_dist_pos"+".append((z[3] * av_bandwidth_max) / (math.sqrt(z[3] ** 2) + math.sqrt(av_bandwidth_max **2)))")
    elif z.index(q) == 1:
-    exec("ap"+g+"_dist_pos"+".append((z[1] - jitter_max) ** 2)")
+    exec("ap"+g+"_dist_pos"+".append((z[1] * jitter_max) / (math.sqrt(z[1] ** 2) + math.sqrt(jitter_max **2)))")
    elif z.index(q) == 2:
-    exec("ap"+g+"_dist_pos"+".append((z[2] - packet_loss_max) ** 2)")
+    exec("ap"+g+"_dist_pos"+".append((z[2] * packet_loss_max) / (math.sqrt(z[2] ** 2) + math.sqrt(packet_loss_max **2)))")
   for q in z:
    if z.index(q) == 0:
-    exec("ap"+g+"_dist_neg"+".append((z[0] - delay_min) ** 2)")
+    exec("ap"+g+"_dist_neg"+".append((z[0] * delay_min) / (math.sqrt(z[0] ** 2) + math.sqrt(delay_min ** (-2) )))")
    elif z.index(q) == 3:
-    exec("ap"+g+"_dist_neg"+".append((z[3] - av_bandwidth_min) ** 2)")
+    exec("ap"+g+"_dist_neg"+".append((z[3] * av_bandwidth_min) / (math.sqrt(z[3] ** 2) + math.sqrt(av_bandwidth_min ** (-2) )))")
    elif z.index(q) == 1:
-    exec("ap"+g+"_dist_neg"+".append((z[1] - jitter_min) ** 2)")
+    exec("ap"+g+"_dist_neg"+".append((z[1] * jitter_min) / (math.sqrt(z[1] ** 2) + math.sqrt(jitter_min ** (-2) )))")
    elif z.index(q) == 2:
-    exec("ap"+g+"_dist_neg"+".append((z[2] - packet_loss_min) ** 2)")
+    exec("ap"+g+"_dist_neg"+".append((z[2] * packet_loss_min) / (math.sqrt(z[2] ** 2) + math.sqrt(packet_loss_min ** (-2) )))")
 
 score = []
 
@@ -156,9 +157,17 @@ score = []
 #  exec ("print (math.sqrt(sum(ap" + str(i) + "_dist_pos)))")
 #  exec ("print (math.sqrt(sum(ap" + str(i) + "_dist_neg)))")
 
-for i in range(1,(int(n)+1)):   #criacao da lista com as pontuacoes de todas     as redes.
+for i in range(1,(int(n)+1)):	#criacao da lista com as pontuacoes de todas as redes.
  if i in ap_range:
-  exec ("score.append(1-((((math.sqrt(sum(ap" + str(i) + "_dist_pos)))*0.889    ) + (math.sqrt(sum(ap" + str(i) + "_dist_neg)))*0.111)/(math.sqrt(sum(ap" +     str(i)+"_dist_pos)) + math.sqrt(sum(ap" + str(i) + "_dist_neg)))))")
+  exec ("ki = ap"+str(i)+"_dist_pos")
+  exec ("ki2 = sum(ap"+str(i)+"_dist_pos)")
+  exec ("li = ap"+str(i)+"_dist_neg")
+  exec ("li2 = sum(ap"+str(i)+"_dist_neg)")
+  for up in ki:
+   exec("ap"+str(i)+"_normalized_2.append( up*ki2)")
+  for un in li:
+   exec("ap"+str(i)+"_normalized_2.append( un*li2)")
+  exec ("score.append(math.sqrt(sum(ap" + str(i) + "_dist_neg))/(math.sqrt(sum(ap" + str(i)+"_dist_pos)) + math.sqrt(sum(ap" + str(i) + "_dist_neg))))")
  else:
   score.append(0)
 print(score)

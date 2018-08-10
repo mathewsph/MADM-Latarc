@@ -130,23 +130,23 @@ for ab in range(1,(int(n)+1)):
   exec("%s = %s" % ("ap"+g+"_dist_neg",[]))
   for q in z:
    if z.index(q) == 0:
-    w = ((z[0] - delay_max) ** 2)
+    w = (((z[0] - delay_max) ** 2)/delay_weight)
     exec("ap"+g+"_dist_pos"+".append(w)")
    elif z.index(q) == 3:
-    exec("ap"+g+"_dist_pos"+".append((z[3] - av_bandwidth_max) ** 2)")
+    exec("ap"+g+"_dist_pos"+".append(((z[3] - av_bandwidth_max) ** 2)/av_bandwidth_weight)")
    elif z.index(q) == 1:
-    exec("ap"+g+"_dist_pos"+".append((z[1] - jitter_max) ** 2)")
+    exec("ap"+g+"_dist_pos"+".append(((z[1] - jitter_max) ** 2)/jitter_weight)")
    elif z.index(q) == 2:
-    exec("ap"+g+"_dist_pos"+".append((z[2] - packet_loss_max) ** 2)")
+    exec("ap"+g+"_dist_pos"+".append(((z[2] - packet_loss_max) ** 2)/packet_loss_weight)")
   for q in z:
    if z.index(q) == 0:
-    exec("ap"+g+"_dist_neg"+".append((z[0] - delay_min) ** 2)")
+    exec("ap"+g+"_dist_neg"+".append(((z[0] - delay_min) ** 2)/delay_weight)")
    elif z.index(q) == 3:
-    exec("ap"+g+"_dist_neg"+".append((z[3] - av_bandwidth_min) ** 2)")
+    exec("ap"+g+"_dist_neg"+".append(((z[3] - av_bandwidth_min) ** 2)/av_bandwidth_weight)")
    elif z.index(q) == 1:
-    exec("ap"+g+"_dist_neg"+".append((z[1] - jitter_min) ** 2)")
+    exec("ap"+g+"_dist_neg"+".append(((z[1] - jitter_min) ** 2)/jitter_weight)")
    elif z.index(q) == 2:
-    exec("ap"+g+"_dist_neg"+".append((z[2] - packet_loss_min) ** 2)")
+    exec("ap"+g+"_dist_neg"+".append(((z[2] - packet_loss_min) ** 2)/packet_loss_weight)")
 
 score = []
 
@@ -156,9 +156,9 @@ score = []
 #  exec ("print (math.sqrt(sum(ap" + str(i) + "_dist_pos)))")
 #  exec ("print (math.sqrt(sum(ap" + str(i) + "_dist_neg)))")
 
-for i in range(1,(int(n)+1)):   #criacao da lista com as pontuacoes de todas     as redes.
+for i in range(1,(int(n)+1)):	#criacao da lista com as pontuacoes de todas as redes.
  if i in ap_range:
-  exec ("score.append(1-((((math.sqrt(sum(ap" + str(i) + "_dist_pos)))*0.889    ) + (math.sqrt(sum(ap" + str(i) + "_dist_neg)))*0.111)/(math.sqrt(sum(ap" +     str(i)+"_dist_pos)) + math.sqrt(sum(ap" + str(i) + "_dist_neg)))))")
+  exec ("score.append(math.sqrt(sum(ap" + str(i) + "_dist_neg))/(math.sqrt(sum(ap" + str(i)+"_dist_pos)) + math.sqrt(sum(ap" + str(i) + "_dist_neg))))")
  else:
   score.append(0)
 print(score)

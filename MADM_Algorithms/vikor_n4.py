@@ -13,6 +13,7 @@ packet_loss_weight = 0.038	#perda de pacotes
 av_bandwidth_weight = 0.422	#Largura de banda(em Mb - Megabits)
 
 l = [0] * n
+score = [0] * n
 
 #for a in range(1,(int(n)+1)):		
 for a in ap_range:
@@ -32,7 +33,6 @@ for a in ap_range:
   exec("%s = %d" % (i + "_min",0))
   exec("%s = %s" % (i + "_normalized",[]))
   exec("%s = %s" % (k + "_normalized",[]))
-  exec("%s = %s" % (i + "_x",[]))
 
 #for attributes in l[0]:
 # attr.append(attributes)
@@ -44,7 +44,8 @@ for z in range(1,(int(n)+1)):
   for xij in attr:
    exec("ap" + str(z) + ".append(float(l[z-1][xij]))")
 
-print (l)
+for u in l:
+ print (u)
 
 for x in l:
  if x != 0:
@@ -76,41 +77,22 @@ for i in range(1,len(l)+1):
     m = k ** 2
     exec("ap" + g + "_normalized.append(m)")
 
-
-for j in attr:
-  exec ('apc =' + j)
-  for e in apc:
-   exec(j+'_x.append(e**2)')
-
 for ab in range(1,(int(n)+1)):		#Normalizacao com a equacao "rij" Multiplicacao dos pesos pelo resultado da equacao anterior
  if ab in ap_range:
   g = str(ab)
   exec("ap_list = ap"+g)
-#  exec("apc = math.sqrt(sum(ap" + g + "_normalized))")
+  exec("apc = (sum(ap" + g + "_normalized))**2")
   for attr_value in ap_list:
-#     print (attr_value)
-#     exec("ap" + g + "[(ap_list.index(attr_value))] = attr_value/apc")
-#  for attr_valuen2 in ap_list:
-     if ap_list.index(attr_value) == 0:
-       apc = math.sqrt(sum(delay_x))
-       exec("ff = attr_value/apc")
-       exec("ap" + g + "[(ap_list.index(attr_value))] = (ff*delay_weight)")
-       delay_normalized.append(ff*delay_weight)
-     elif ap_list.index(attr_value) == 1:
-       apc = math.sqrt(sum(jitter_x))
-       exec("ff = attr_value/apc")
-       exec("ap" + g + "[(ap_list.index(attr_value))] = (ff*jitter_weight)")
-       jitter_normalized.append(ff*jitter_weight)
-     elif ap_list.index(attr_value) == 2:
-       apc = math.sqrt(sum(packet_loss_x))
-       exec("ff = attr_value/apc")
-       exec("ap" + g + "[(ap_list.index(attr_value))] = (ff*packet_loss_weight)")
-       packet_loss_normalized.append(ff*packet_loss_weight)
-     elif ap_list.index(attr_value) == 3:
-       apc = math.sqrt(sum(av_bandwidth_x))
-       exec("ff = attr_value/apc")
-       exec("ap" + g + "[(ap_list.index(attr_value))] = (ff*av_bandwidth_weight)")
-       av_bandwidth_normalized.append(ff*av_bandwidth_weight)
+     exec("ap" + g + "[(ap_list.index(attr_value))] = attr_value/apc")
+  for attr_valuen2 in ap_list:
+     if ap_list.index(attr_valuen2) == 0:
+       delay_normalized.append(attr_valuen2)
+     elif ap_list.index(attr_valuen2) == 1:
+       jitter_normalized.append(attr_valuen2)
+     elif ap_list.index(attr_valuen2) == 2:
+       packet_loss_normalized.append(attr_valuen2)
+     elif ap_list.index(attr_valuen2) == 3:
+       av_bandwidth_normalized.append(attr_valuen2)
 
 for apt in l:			#Laco que fara a funcao das formulas de normalizacao A+ e A- (definicao das redes ideais positivas e negativas)
  if apt != 0:
@@ -122,6 +104,13 @@ for apt in l:			#Laco que fara a funcao das formulas de normalizacao A+ e A- (de
     exec(attr+"_max = max(" + attr + "_normalized)")
     exec(attr+"_min = min(" + attr + "_normalized)")
 
+def s_i (attribute,value,weight,max_attribute,min_attribute):
+  i = weight*((max_attribute - value)/(max_attribute - min_attribute))  
+  return i 
+def r_i (attribute,value,weight,max_attribute,min_attribute):  
+  i = max_attribute*(weight*((max_attribute - value)/(max_attribute - min_attribute)))
+  return i
+
 for ab in range(1,(int(n)+1)):
  if ab in ap_range:
   g = str(ab)
@@ -130,37 +119,56 @@ for ab in range(1,(int(n)+1)):
   exec("%s = %s" % ("ap"+g+"_dist_neg",[]))
   for q in z:
    if z.index(q) == 0:
-    w = ((z[0] - delay_max) ** 2)
-    exec("ap"+g+"_dist_pos"+".append(w)")
-   elif z.index(q) == 3:
-    exec("ap"+g+"_dist_pos"+".append((z[3] - av_bandwidth_max) ** 2)")
+    w = s_i(delay, q, delay_weight, delay_max, delay_min)
+    exec("ap"+g+"_dist_pos.append(w)")
+    y = r_i(delay, q, delay_weight, delay_max, delay_min)
+    exec("ap"+g+"_dist_neg.append(y)")
    elif z.index(q) == 1:
-    exec("ap"+g+"_dist_pos"+".append((z[1] - jitter_max) ** 2)")
+    w = s_i(jitter, q, jitter_weight, jitter_max, jitter_min)
+    y = r_i(jitter, q, jitter_weight, jitter_max, jitter_min)
+    exec("ap"+g+"_dist_neg.append(y)")
+    exec("ap"+g+"_dist_pos.append(w)")
    elif z.index(q) == 2:
-    exec("ap"+g+"_dist_pos"+".append((z[2] - packet_loss_max) ** 2)")
-  for q in z:
-   if z.index(q) == 0:
-    exec("ap"+g+"_dist_neg"+".append((z[0] - delay_min) ** 2)")
+    w = s_i(packet_loss, q, packet_loss_weight, packet_loss_max, packet_loss_min)
+    exec("ap"+g+"_dist_pos.append(w)")
+    y = r_i(packet_loss, q, packet_loss_weight, packet_loss_max, packet_loss_min)
+    exec("ap"+g+"_dist_neg.append(y)")
    elif z.index(q) == 3:
-    exec("ap"+g+"_dist_neg"+".append((z[3] - av_bandwidth_min) ** 2)")
-   elif z.index(q) == 1:
-    exec("ap"+g+"_dist_neg"+".append((z[1] - jitter_min) ** 2)")
-   elif z.index(q) == 2:
-    exec("ap"+g+"_dist_neg"+".append((z[2] - packet_loss_min) ** 2)")
+    w = s_i(av_bandwidth, q, av_bandwidth_weight, av_bandwidth_max, av_bandwidth_min)
+    exec("ap"+g+"_dist_pos.append(w)")
+    y = r_i(av_bandwidth, q, av_bandwidth_weight, av_bandwidth_max, av_bandwidth_min)
+    exec("ap"+g+"_dist_neg.append(y)")
 
-score = []
+all_s = []
+all_r = []
 
+for ab in range(1,(int(n)+1)):
+ if ab in ap_range:
+  g = str(ab)
+  exec ("z = ap" + g)
+  exec("ap"+g+"_dist_pos = sum(ap" + g + "_dist_pos)")
+  exec("ap"+g+"_dist_neg = sum(ap" + g + "_dist_neg)")
+  exec("all_s.append(ap"+g+"_dist_pos)")
+  exec("all_r.append(ap"+g+"_dist_neg)")
 
-#for i in range(1,(int(n)+1)):
-# if i in ap_range:
-#  exec ("print (math.sqrt(sum(ap" + str(i) + "_dist_pos)))")
-#  exec ("print (math.sqrt(sum(ap" + str(i) + "_dist_neg)))")
+def q_i(si, ri):
+  max_s = min(all_s)
+  max_r = min(all_r)
+  min_s = max(all_s)
+  min_r = max(all_r)
+  qi = ((0.5*((si - max_s)/(min_s - max_s))) + ((1-0.5)*((ri - max_r)/(min_r - max_r))))
+  return qi
 
-for i in range(1,(int(n)+1)):   #criacao da lista com as pontuacoes de todas     as redes.
- if i in ap_range:
-  exec ("score.append(1-((((math.sqrt(sum(ap" + str(i) + "_dist_pos)))*0.889    ) + (math.sqrt(sum(ap" + str(i) + "_dist_neg)))*0.111)/(math.sqrt(sum(ap" +     str(i)+"_dist_pos)) + math.sqrt(sum(ap" + str(i) + "_dist_neg)))))")
- else:
-  score.append(0)
-print(score)
-print("rede " + str(score.index(max(score)) + 1))
-print("pontuacao da rede: " + str(max(score)))
+for zv in range(1,(int(n)+1)):
+ if zv in ap_range:
+  bt = str(zv)
+  exec("si = ap"+bt+"_dist_pos")
+  exec("ri = ap"+bt+"_dist_neg") 
+  fc = q_i(si, ri)
+  score[int(bt)-1] = fc
+ else: 
+  score[zv-1] = 1000000
+print (all_s)
+print (score) 
+print("rede " + str(score.index(min(score)) + 1))
+
