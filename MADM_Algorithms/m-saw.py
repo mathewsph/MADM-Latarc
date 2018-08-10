@@ -112,4 +112,3 @@ print(p)
 
 print("rede " + str(p.index(max(p)) + 1))
 print("pontuacao da rede: " + str(max(p)))
-
